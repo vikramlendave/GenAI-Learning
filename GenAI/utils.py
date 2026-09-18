@@ -8,16 +8,22 @@ def is_valid_file(path):
         return False
 
 
-def read_pdf_and_write_text(read_path, write_path):
+def read_pdf_and_write_text(read_path, write_path, page_no=None):
     reader = PdfReader(read_path)
+    print(len(reader.pages))
+    if page_no is not None and page_no>0 and page_no >= len(reader.pages):
+        print(f"Page {page_no} is out of range")
+        return None
     with open(write_path, "a", encoding="utf-8") as f:
-        for page in reader.pages:
-            f.write(page.extract_text())
+        if(page_no is not None):
+            f.write(reader.pages[page_no-1].extract_text())
+        else:
+            for page in reader.pages:
+                f.write(page.extract_text())
         f.close()
 
 
 def get_all_valid_file_list_from_directory(directory_path, file_list):
-    print(directory_path)
     for item in directory_path.glob("*"):
         if item.is_dir():
             get_all_valid_file_list_from_directory(item, file_list)
