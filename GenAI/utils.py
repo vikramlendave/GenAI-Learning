@@ -24,13 +24,10 @@ def read_pdf_and_write_text(read_path, write_path, page_no=None):
 
 def save_matched_text_only(read_path, write_path, regex):
     reader = PdfReader(read_path)
-    print(regex)
     with open(write_path, "a", encoding="utf-8") as f:
         for page in reader.pages:
             text = page.extract_text()
             if text:
-                full_matches = [m.group(0) for m in re.finditer(regex, text, re.IGNORECASE)]
-                print("Full Matches:", full_matches)
                 for match in re.finditer(regex, text, re.IGNORECASE):
                     print(match.group(0))
                     f.write(f"{match.group(0)}\n")
