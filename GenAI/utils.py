@@ -1,4 +1,5 @@
 from pypdf import PdfReader
+import re
 
 def is_valid_file(path):
     list_valid_extensions = [".PDF"]
@@ -10,7 +11,6 @@ def is_valid_file(path):
 
 def read_pdf_and_write_text(read_path, write_path, page_no=None):
     reader = PdfReader(read_path)
-    print(len(reader.pages))
     if page_no is not None and page_no>0 and page_no >= len(reader.pages):
         print(f"Page {page_no} is out of range")
         return None
@@ -21,6 +21,19 @@ def read_pdf_and_write_text(read_path, write_path, page_no=None):
             for page in reader.pages:
                 f.write(page.extract_text())
         f.close()
+
+def save_matched_text_only(read_path, write_path, regex):
+    reader = PdfReader(read_path)
+    print(regex)
+    with open(write_path, "a", encoding="utf-8") as f:
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                full_matches = [m.group(0) for m in re.finditer(regex, text, re.IGNORECASE)]
+                print("Full Matches:", full_matches)
+                for match in re.finditer(regex, text, re.IGNORECASE):
+                    print(match.group(0))
+                    f.write(f"{match.group(0)}\n")
 
 
 def get_all_valid_file_list_from_directory(directory_path, file_list):
